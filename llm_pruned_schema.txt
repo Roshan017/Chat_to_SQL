@@ -1,0 +1,2 @@
+store_consolidated_data
+store_master
