@@ -19,6 +19,11 @@ class SchemaResponse(BaseModel):
     tables: Dict[str, TableSchema]
     logical_to_physical: Dict[str, List[str]]
 
+
+class DB_Request(BaseModel):
+    db_conn_string: str
+    table_name: str = "public"
+
 class SchemaRequest(BaseModel):
     db_id: str = Field(..., example="tenant_analytics")
     schema_name: str = Field(default="public", example="public")
