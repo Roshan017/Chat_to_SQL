@@ -1,13 +1,12 @@
-from app.core.secrets import get_connection_string
 import psycopg2
 from app.services.response_formater import format_response
-from app.graph.state import TitanState
+from app.graph.state import DataSageState
 from app.core.settings import get_settings
 
 settings = get_settings()
 
 
-def response_generator_node(state: TitanState) -> TitanState:
+def response_generator_node(state: DataSageState) -> DataSageState:
     """
     Executes the generated SQL query and returns:
     - Formatted response (if successful)
@@ -22,12 +21,9 @@ def response_generator_node(state: TitanState) -> TitanState:
     if not sql_query:
         return {**state, "response": "SQL query not found."}
 
-    db_id = settings.DB_ID
+    db_id = state.get("db_id")
+    conn_str = state.get("db_conn_string")
 
-    if not db_id:
-        return {**state, "response": "Database configuration missing."}
-
-    conn_str = get_connection_string(db_id)
     if not conn_str:
         return {**state, "response": f"No connection string found for db_id: {db_id}"}
 

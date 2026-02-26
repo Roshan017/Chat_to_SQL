@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 from functools import lru_cache
 
 class Settings(BaseSettings):
-    APP_NAME: str = "Titan_chat"
+    APP_NAME: str = "DataSage"
     APP_VERSION: str = "1.0"
 
     REDIS_ENABLED: bool = False
@@ -13,9 +13,7 @@ class Settings(BaseSettings):
 
     
 
-    DB_TENANT_ANALYTICS: str
-    DB_TENANT_ANALYTICS_SCHEMA: str
-    DB_ID: str
+    # Settings passed via API now
     # INTENT_RECOG_PROMPT: str
     # SCHEMA_PRUNING_PROMPT: str
 

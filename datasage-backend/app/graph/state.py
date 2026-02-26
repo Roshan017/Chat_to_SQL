@@ -16,7 +16,7 @@ class SqlValidationResult(TypedDict):
     is_valid: bool
     errors: List[str]
 
-class TitanState(TypedDict, total=False):
+class DataSageState(TypedDict, total=False):
     
     user_id: str
     chat_id: str
@@ -28,6 +28,8 @@ class TitanState(TypedDict, total=False):
     db_id: str
 
     schema_name: str
+
+    db_conn_string: str
 
     sql_query: str
 

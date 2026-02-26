@@ -3,9 +3,7 @@ from app.llm.gemini import gemini_llm_call
 from langfuse import observe
 
 
-@observe(name="response_formatter")
-def format_response(user_req: str, db_response: dict) -> str:
-    print("Formatter Called")
+
 @observe(name="response_formatter")
 def format_response(user_req: str, db_response: dict) -> str:
     """

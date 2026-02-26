@@ -3,8 +3,7 @@ import time
 from datetime import datetime, timezone
 
 from app.db.schema_loader import load_schema
-from app.core.secrets import get_connection_string
-from app.graph.state import TitanState
+from app.graph.state import DataSageState
 from app.cache.redis_cache import cache_key, get_cached_schema, set_cached_schema
 
 from app.services.write_to_file import write_table_names
@@ -18,7 +17,7 @@ settings = get_settings()
 #     return datetime.now(timezone.utc).isoformat(timespec="milliseconds")
 
 
-def schema_loader_node(state: TitanState) -> TitanState:
+def schema_loader_node(state: DataSageState) -> DataSageState:
     """
     Load the database schema based on user query and db_id
     """
@@ -31,8 +30,13 @@ def schema_loader_node(state: TitanState) -> TitanState:
     if state is None:
         state = {}
     
-    db_id = settings.DB_ID
-    schema_name = settings.DB_TENANT_ANALYTICS_SCHEMA
+    db_id = state["db_id"]
+
+    schema_name = state["schema_name"]
+    
+
+    conn_str = state["db_conn_string"]
+    
 
     if not db_id or not schema_name:
         return state
@@ -48,14 +52,14 @@ def schema_loader_node(state: TitanState) -> TitanState:
         # print(f"[{ts()}] ✅ cache HIT")
         # print(f"[{ts()}] 🟢 schema_loader_node END "
         #       f"(total {(time.perf_counter() - start_total):.3f}s)")
-        # print("Schema Loaded to Titan state from cache")
+        # print("Schema Loaded to DataSage state from cache")
 
         return {**state, "schema": cached}
 
     # print(f"[{ts()}] ❌ cache MISS")
 
     # ── Connection string ───────────────────────
-    conn_str = get_connection_string(db_id)
+    
     if not conn_str:
         raise ValueError(f"No connection string found for db_id: {db_id}")
 
@@ -82,7 +86,7 @@ def schema_loader_node(state: TitanState) -> TitanState:
     # print(f"[{ts()}] 🟢 schema_loader_node END "
     #       f"(total {(time.perf_counter() - start_total):.3f}s)")
 
-    # print("Schema Loaded to Titan state from database")
+    # print("Schema Loaded to DataSage state from database")
 
     
 

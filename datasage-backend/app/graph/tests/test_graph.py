@@ -1,7 +1,7 @@
-from app.graph.graph import build_titan_graph
+from app.graph.graph import build_DataSage_graph
 
 def test_langgraph():
-    graph = build_titan_graph()
+    graph = build_DataSage_graph()
 
     state = {
         "user_query": "load schema",

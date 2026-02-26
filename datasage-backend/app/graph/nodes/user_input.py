@@ -1,6 +1,6 @@
-from app.graph.state import TitanState
+from app.graph.state import DataSageState
 
-def user_input_node(state: TitanState) -> TitanState:
+def user_input_node(state: DataSageState) -> DataSageState:
     
     """
         Just Normalize and pass on the user input forward

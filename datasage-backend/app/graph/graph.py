@@ -1,5 +1,5 @@
 from langgraph.graph import StateGraph , END
-from app.graph.state import TitanState
+from app.graph.state import DataSageState
 
 from app.graph.nodes.user_input import user_input_node
 from app.graph.nodes.social_node import social_node
@@ -11,7 +11,7 @@ from app.graph.nodes.sql_validator import sql_validator
 from app.graph.nodes.response_generator import response_generator_node
 from app.graph.nodes.memory_nodes import memory_store_node, memory_retrieve_node
 
-def route_after_intent(state: TitanState) -> str:
+def route_after_intent(state: DataSageState) -> str:
     """
     Conditional routing after intent extraction
     """
@@ -20,7 +20,7 @@ def route_after_intent(state: TitanState) -> str:
         return "social_node"
     return "schema_loader"
 
-def route_if_memory(state: TitanState) -> str:
+def route_if_memory(state: DataSageState) -> str:
     """
     Conditional routing if response in memory
     """
@@ -31,8 +31,8 @@ def route_if_memory(state: TitanState) -> str:
 
 
 
-def build_titan_graph():
-    graph = StateGraph(TitanState)
+def build_DataSage_graph():
+    graph = StateGraph(DataSageState)
 
     graph.add_node("user_input", user_input_node)
     graph.add_node("memory_retrieve", memory_retrieve_node)

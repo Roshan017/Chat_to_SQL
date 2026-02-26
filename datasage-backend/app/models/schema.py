@@ -20,13 +20,13 @@ class SchemaResponse(BaseModel):
     logical_to_physical: Dict[str, List[str]]
 
 
-class DB_Request(BaseModel):
-    db_conn_string: str
-    table_name: str = "public"
+
 
 class SchemaRequest(BaseModel):
+    user_id: str = Field(..., example="user_123")
     db_id: str = Field(..., example="tenant_analytics")
     schema_name: str = Field(default="public", example="public")
+    db_conn_string: str = Field(..., example="postgresql://user:password@host:port/database")
 
 
 class PrunedResponse(BaseModel):

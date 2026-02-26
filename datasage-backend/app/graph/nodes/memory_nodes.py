@@ -1,5 +1,5 @@
 import psycopg2
-from app.graph.state import TitanState
+from app.graph.state import DataSageState
 from app.core.settings import get_settings
 
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
@@ -49,7 +49,8 @@ def embed_text_to_pgvector(text: str) -> str:
 # MEMORY RETRIEVE NODE
 # ============================
 
-def memory_retrieve_node(state: TitanState) -> TitanState:
+def memory_retrieve_node(state: DataSageState) -> DataSageState:
+    # print('Memory Retrieve Node Entered')
     user_id = state.get("user_id")
     chat_id = state.get("chat_id")
     user_query = state.get("user_query")
@@ -97,9 +98,11 @@ def memory_retrieve_node(state: TitanState) -> TitanState:
             if similarity >= SIMILARITY_THRESHOLD:
                 state["response"] = stored_response
                 state["memory_hit"] = True
+                # print('Memory Hit')
                 return state
 
         state["memory_hit"] = False
+        # print('Memory Miss')
         return state
 
     finally:
@@ -111,7 +114,8 @@ def memory_retrieve_node(state: TitanState) -> TitanState:
 # MEMORY STORE NODE
 # ============================
 
-def memory_store_node(state: TitanState) -> TitanState:
+def memory_store_node(state: DataSageState) -> DataSageState:
+    # print('Memory Store Node Entered')
     if state.get("memory_hit"):
         return state
 
@@ -119,7 +123,7 @@ def memory_store_node(state: TitanState) -> TitanState:
     chat_id = state.get("chat_id")
     user_query = state.get("user_query")
     response = state.get("response")
-    print(response)
+    # print(response)
 
 
 
@@ -129,7 +133,7 @@ def memory_store_node(state: TitanState) -> TitanState:
     upper_response = response.upper()
 
     if any(word in upper_response for word in ["INVALID", "ERROR"]):
-        print("Invalid Ans not stored in memory")
+        # print("Invalid Ans not stored in memory")
         return state
 
     conn = get_memory_connection()
@@ -145,7 +149,7 @@ def memory_store_node(state: TitanState) -> TitanState:
         """, (user_id, chat_id, user_query, response, embedding))
 
         conn.commit()
-        print('Memory Stored')
+        # print('Memory Stored')
         return state
 
     finally:

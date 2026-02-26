@@ -1,6 +1,6 @@
 import json
 from typing import Dict, Any, List
-from app.graph.state import TitanState
+from app.graph.state import DataSageState
 from app.llm.gemini import gemini_llm_call
 from app.core.secrets import get_gemini_api_key
 from langfuse import observe
@@ -30,11 +30,11 @@ def build_sql_system_prompt() -> str:
     - No UPDATE, DELETE, INSERT.
     - Use JOINs ONLY if joins are explicitly provided in the schema.
     - CAST timestamps to DATE (e.g., column::date) when grouping by day/date to avoid granularity errors.
-    - If a user's metric (e.g., 'potential') does not exist verbatim, use the most closely related numerical metric (e.g., 'revenue') provided in the schema.
+    - If a user's metric (e.g., 'activity') does not exist verbatim, use the most closely related numerical metric (e.g., 'log_count') provided in the schema.
 
     FIELD RESOLUTION RULES:
     - If a filter field is 'UNKNOWN', scan the text/string columns in the provided schema for the most logical match. 
-    - (e.g., if value is 'birthday', and schema has 'cohort', map the filter to 'cohort').
+    - (e.g., if value is 'active', and schema has 'status', map the filter to 'status').
     - If dimensions are missing from the intent but required for a metric (like 'highest'), include the most relevant category/identity column in the SELECT and GROUP BY.
 
     SUBQUERY & CTE RULES:
@@ -90,7 +90,7 @@ COMBINED_TABLES:
 """.strip()
 
 @observe()
-def sql_generator_node(state: TitanState) -> TitanState:
+def sql_generator_node(state: DataSageState) -> DataSageState:
     intent = state.get("intent")
 
     pruned_schema = state.get('pruned_schema')

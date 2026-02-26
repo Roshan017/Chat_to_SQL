@@ -1,6 +1,6 @@
 from app.core.secrets import get_gemini_api_key
 from app.llm.gemini import gemini_llm_call
-from app.graph.state import TitanState, IntentResult
+from app.graph.state import DataSageState, IntentResult
 import json
 import re
 from langfuse import get_client
@@ -21,7 +21,7 @@ DEFAULT_INTENT: IntentResult = {
 }
 
 @observe()
-def intent_extractor_node(state: TitanState) -> TitanState:
+def intent_extractor_node(state: DataSageState) -> DataSageState:
     if state is None:
         state = {}
 
@@ -61,13 +61,11 @@ def intent_extractor_node(state: TitanState) -> TitanState:
 
     Keyword Extraction Rules:
 - Extract SINGLE-WORD keywords verbatim from the request and convert to lowercase.
-- KEYWORD EXPANSION: For every extracted keyword, you MUST also include any "Priority" keywords that are logically related to the domain context, even if not explicitly in the request.
+- KEYWORD EXPANSION: For every extracted keyword, you MUST also include any logical synonyms or closely related terms based on standard domain knowledge, even if not explicitly in the request.
 - RELATIONSHIP MAPPING (Internal Logic):
-    * If 'products' or 'outlet' -> add 'sales', 'store', 'transaction'
-    * If 'customer' or 'member' -> add 'sales', 'orders', 'cohort, data'
-    * If 'performance' or 'analytics' -> add 'report', 'summary', 'metrics'
-    * If 'campaign' or 'marketing' -> add 'cohort', 'performance'
-- ALL keywords must be chosen strictly from the Priority List.
+    * Generalize terms to match broader categories (e.g. if 'client' -> add 'user', 'customer')
+    * If requesting 'history' or 'logs' -> add 'record', 'transaction', 'event'
+    * If requesting 'performance' or 'analytics' -> add 'report', 'summary', 'metrics'
 - Keywords MUST be lowercase.
     {
       "intent_type": "LIST | AGGREGATE | COMPARE | TREND | FILTER | SOCIAL",

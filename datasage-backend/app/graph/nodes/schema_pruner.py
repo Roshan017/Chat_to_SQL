@@ -1,7 +1,7 @@
 import json
 
 import re
-from app.graph.state import TitanState
+from app.graph.state import DataSageState
 from app.services.Schema_pruning.initial_prune import initial_prune
 from app.services.write_to_file import write_pruned_table_names
 from app.llm.gemini import gemini_llm_call
@@ -12,8 +12,9 @@ from app.services.Schema_pruning.secondary_prune import serialize_schema_for_llm
 
 
 @observe()
-def schema_pruner_node(state: TitanState) -> TitanState:
+def schema_pruner_node(state: DataSageState) -> DataSageState:
     raw_schema = state["schema"]
+    print("Schema Pruner: Raw Schema", raw_schema)
     # print(raw_schema)
     # combined_tables = state["schema"]["logical_to_physical"]
     # print(combined_tables)
@@ -60,10 +61,10 @@ def schema_pruner_node(state: TitanState) -> TitanState:
         - If a Logical Table (from the Combined Tables List) represents multiple Physical Tables, you MUST return the Logical Table schema and NOT the individual physical shards.
         - Do NOT invent, rename, or infer tables or columns.
         - COLUMN SELECTION: Keep all columns required for:
-            1. The Metric (e.g., 'price', 'totalsales')
-            2. The Dimension/Identity (e.g., 'brand', 'product_name')
-            3. The Filter/Time Range (e.g., 'invoice_date', 'region')
-        - If the user asks for a comparison or trend (e.g., 'price drops'), ensure you keep columns that allow for historical comparison.
+            1. The Metric (e.g., numerical values like 'amount', 'count', 'score')
+            2. The Dimension/Identity (e.g., categories like 'name', 'type', 'id')
+            3. The Filter/Time Range (e.g., temporal or status fields like 'date', 'status', 'region')
+        - If the user asks for a comparison or trend, ensure you keep columns that allow for historical comparison.
         - If unsure about a table's relevance, KEEP it.
         - Output MUST be valid JSON mapping table_name -> list[column_name].
          """
@@ -116,7 +117,7 @@ def schema_pruner_node(state: TitanState) -> TitanState:
 
    
     assert isinstance(final_tables, dict)
-    # print(final_tables)
+    print("Schema Pruner: ",final_tables)
 
     return {
         **state,

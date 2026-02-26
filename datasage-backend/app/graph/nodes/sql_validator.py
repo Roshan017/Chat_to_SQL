@@ -1,5 +1,5 @@
 from typing import List
-from app.graph.state import TitanState
+from app.graph.state import DataSageState
 import sqlglot
 from sqlglot import exp
 
@@ -14,7 +14,7 @@ FORBIDDEN_STATEMENTS = (
 )
 
 
-def sql_validator(state: TitanState) -> TitanState:
+def sql_validator(state: DataSageState) -> DataSageState:
     errors: List[str] = []
 
     sql = state.get("sql_query")

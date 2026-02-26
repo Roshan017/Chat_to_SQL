@@ -1,4 +1,4 @@
-from app.graph.state import TitanState
+from app.graph.state import DataSageState
 
 from langfuse import observe
 
@@ -27,7 +27,7 @@ STATIC_REPLIES = {
  
 @observe
 
-def social_node(state: TitanState) -> TitanState:
+def social_node(state: DataSageState) -> DataSageState:
 
     user_query = state.get("user_query", "").strip()
  

@@ -6,6 +6,7 @@ from app.graph.state import SqlValidationResult
 
 class UserRequest(BaseModel):
     user_id: str
+    chat_id: str
     user_req: str
 
 class UserResponse(BaseModel):
