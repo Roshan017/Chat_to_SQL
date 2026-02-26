@@ -16,7 +16,18 @@ async def lifespan(app: FastAPI):
         client.flushdb()
         print("✅ Redis DB cleared.")
 
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI(title="DataSage", version="1.0", lifespan=lifespan)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 app.include_router(schema_router)
 app.include_router(user_req_router)

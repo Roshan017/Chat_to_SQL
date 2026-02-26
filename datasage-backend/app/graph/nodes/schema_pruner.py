@@ -14,7 +14,6 @@ from app.services.Schema_pruning.secondary_prune import serialize_schema_for_llm
 @observe()
 def schema_pruner_node(state: DataSageState) -> DataSageState:
     raw_schema = state["schema"]
-    print("Schema Pruner: Raw Schema", raw_schema)
     # print(raw_schema)
     # combined_tables = state["schema"]["logical_to_physical"]
     # print(combined_tables)
@@ -117,7 +116,6 @@ def schema_pruner_node(state: DataSageState) -> DataSageState:
 
    
     assert isinstance(final_tables, dict)
-    print("Schema Pruner: ",final_tables)
 
     return {
         **state,

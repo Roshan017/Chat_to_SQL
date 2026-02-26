@@ -1,3 +1,4 @@
-user_chats
-user_memory
-users
+region_cluster_definitionv1
+regions
+store_region_map
+user_region_assignments

@@ -1,65 +1,177 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { GlassCard } from "@/components/ui/GlassCard";
+import { RevealOnScroll } from "@/components/ui/RevealOnScroll";
+import { SchemaViewer } from "@/components/SchemaViewer";
+import { Database, Loader2, ArrowRight } from "lucide-react";
+
+export default function LandingPage() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [schemaData, setSchemaData] = useState<any>(null);
+
+  const [formData, setFormData] = useState({
+    db_id: "",
+    schema_name: "",
+    db_conn_string: "",
+  });
+
+  const generateUserId = () => {
+    return "user_" + Math.random().toString(36).substr(2, 9);
+  };
+
+  const handleConnect = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setSchemaData(null);
+
+    try {
+      let userId = localStorage.getItem("datasage_user_id");
+      if (!userId) {
+        userId = generateUserId();
+        localStorage.setItem("datasage_user_id", userId);
+      }
+      localStorage.setItem("datasage_db_id", formData.db_id);
+
+      const res = await fetch("http://127.0.0.1:8000/load_schema", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...formData,
+          user_id: userId,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || "Failed to connect to database");
+      }
+
+      const data = await res.json();
+      setSchemaData(data);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const proceedToChat = () => {
+    router.push("/chat");
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <main className="min-h-screen flex flex-col items-center py-20 px-6 font-[family-name:var(--font-sans)]">
+      <RevealOnScroll className="w-full max-w-xl text-center mb-12">
+        <div className="inline-flex items-center justify-center p-3 sm:p-4 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 shadow-glass mb-6">
+          <Database className="w-8 h-8 sm:w-10 sm:h-10 text-indigo-400" />
+        </div>
+        <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 mb-4">
+          DataSage
+        </h1>
+        <p className="text-lg sm:text-xl text-white/60 font-medium">
+          Talk to your SQL database natively. Connect to understand.
+        </p>
+      </RevealOnScroll>
+
+      {!schemaData ? (
+        <RevealOnScroll delay={0.2} className="w-full max-w-md">
+          <GlassCard className="p-8">
+            <form onSubmit={handleConnect} className="space-y-5">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white/80 pl-1">
+                  Database Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all text-white placeholder:text-white/30"
+                  placeholder="e.g. tenant_analytics"
+                  value={formData.db_id}
+                  onChange={(e) =>
+                    setFormData({ ...formData, db_id: e.target.value })
+                  }
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white/80 pl-1">
+                  Schema Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all text-white placeholder:text-white/30"
+                  placeholder="e.g. public"
+                  value={formData.schema_name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, schema_name: e.target.value })
+                  }
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white/80 pl-1">
+                  Connection String
+                </label>
+                <input
+                  type="password"
+                  required
+                  className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all text-white placeholder:text-white/30 font-mono text-sm"
+                  placeholder="postgresql://user:pass@host:5432/db"
+                  value={formData.db_conn_string}
+                  onChange={(e) =>
+                    setFormData({ ...formData, db_conn_string: e.target.value })
+                  }
+                />
+              </div>
+
+              {error && (
+                <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+                  {error}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3.5 px-4 bg-white text-black font-semibold rounded-xl hover:bg-white/90 active:scale-[0.98] transition-all flex justify-center items-center mt-4 disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  "Connect Database"
+                )}
+              </button>
+            </form>
+          </GlassCard>
+        </RevealOnScroll>
+      ) : (
+        <RevealOnScroll className="w-full max-w-6xl mx-auto flex flex-col items-center">
+          <div className="w-full flex items-center justify-between mb-2">
+            <h2 className="text-2xl font-semibold text-white/90">
+              Schema Extracted
+            </h2>
+            <button
+              onClick={proceedToChat}
+              className="px-6 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white font-medium rounded-xl transition-all active:scale-[0.98] flex items-center gap-2 shadow-lg shadow-indigo-500/20"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+              Proceed to Chat
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+          <p className="text-white/50 w-full mb-6">
+            Found {Object.keys(schemaData.tables).length} tables in your
+            database.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+
+          <SchemaViewer schema={schemaData} />
+        </RevealOnScroll>
+      )}
+    </main>
   );
 }
