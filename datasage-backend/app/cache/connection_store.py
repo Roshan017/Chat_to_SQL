@@ -28,3 +28,8 @@ def get_connection(user_id: str):
         
     val = client.get(get_conn_key(user_id))
     return json.loads(val) if val else None
+
+def clear_connection(user_id: str):
+    client = get_redis_client()
+    if client:
+        client.delete(get_conn_key(user_id))

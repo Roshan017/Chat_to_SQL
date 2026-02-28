@@ -28,6 +28,9 @@ class SchemaRequest(BaseModel):
     schema_name: str = Field(default="public", example="public")
     db_conn_string: str = Field(..., example="postgresql://user:password@host:port/database")
 
+class DisconnectRequest(BaseModel):
+    user_id: str = Field(..., example="user_123")
+
 
 class PrunedResponse(BaseModel):
     version: str = 'v2'

@@ -1,34 +1,85 @@
 @import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap");
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --background: #0b0e14;
+  --foreground: #e6edf3;
 }
 
-@theme default {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* stylelint-disable-next-line at-rule-no-unknown */
+@theme {
+  /* Fonts */
+  --font-sans: var(--font-space-grotesk), sans-serif;
+  --font-display: var(--font-space-grotesk), sans-serif;
+  --font-mono: var(--font-jetbrains-mono), monospace;
 
-  /* Glass Config */
+  /* Colors */
+  --color-primary: #7c3aed;
+  --color-primary-hover: #6d28d9;
+
+  --color-background-light: #f7f6f8;
+  --color-background-dark: #0b0e14;
+  --color-background-darker: #07090f;
+  --color-surface-dark: #161b22;
+  --color-border-dark: #30363d;
+
+  --color-obsidian-dark: #111111;
+  --color-obsidian-card: #151923;
+  --color-obsidian-border: #2a2f3c;
+
+  --color-text-primary: #e6edf3;
+  --color-text-secondary: #7d8590;
+
+  --color-cyber-cyan: #06b6d4;
+  --color-accent-cyan: #00e5ff;
+  --color-emerald-flux: #10b981;
+  --color-accent-pink: #ff00e5;
+
+  /* Shadows */
+  --shadow-glow: 0 0 20px -5px rgba(124, 58, 237, 0.5);
+
+  /* Glass Config (Existing) */
   --blur-xs: 2px;
   --blur-glass: 16px;
   --blur-heavy: 32px;
-
   --color-glass-white: rgba(255, 255, 255, 0.08);
   --color-glass-white-md: rgba(255, 255, 255, 0.15);
   --color-glass-dark: rgba(0, 0, 0, 0.25);
   --color-glass-dark-md: rgba(0, 0, 0, 0.4);
-
   --color-border-glass: rgba(255, 255, 255, 0.18);
   --color-border-glass-strong: rgba(255, 255, 255, 0.35);
-
   --shadow-glass: 0 8px 32px rgba(31, 38, 135, 0.15);
   --shadow-glass-lg: 0 16px 48px rgba(31, 38, 135, 0.25);
   --shadow-glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  background: var(--color-background-dark);
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+}
+
+/* Material Symbols config */
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-background-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-obsidian-border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
 }
