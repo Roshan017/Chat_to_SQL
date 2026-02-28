@@ -4,8 +4,10 @@ from functools import lru_cache
 class Settings(BaseSettings):
     APP_NAME: str = "DataSage"
     APP_VERSION: str = "1.0"
+    FRONTEND_URL: str = "http://localhost:3000"
 
     REDIS_ENABLED: bool = False
+    REDIS_URL: str | None = None
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
     REDIS_DB: int = 0

@@ -9,17 +9,27 @@ settings = get_settings()
 def get_redis_client():
     if not settings.REDIS_ENABLED:
         return None
-    client = redis.Redis(
-        host=settings.REDIS_HOST,
-        port=settings.REDIS_PORT,
-        db=settings.REDIS_DB,
-        decode_responses=True,
-        socket_connect_timeout=1,
-        socket_timeout=1,
-    )
+        
+    if settings.REDIS_URL:
+        client = redis.from_url(
+            settings.REDIS_URL,
+            decode_responses=True,
+            socket_connect_timeout=2,
+            socket_timeout=2,
+        )
+    else:
+        client = redis.Redis(
+            host=settings.REDIS_HOST,
+            port=settings.REDIS_PORT,
+            db=settings.REDIS_DB,
+            decode_responses=True,
+            socket_connect_timeout=1,
+            socket_timeout=1,
+        )
+        
     try:
         client.ping()
-        print(f"✅ Connected to Redis at {settings.REDIS_HOST}:{settings.REDIS_PORT}")
+        print(f"✅ Connected to Redis")
     except (ConnectionError, TimeoutError) as e:
         print(f"❌ Could not connect to Redis: {e}")
         return None

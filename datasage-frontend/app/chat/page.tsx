@@ -56,7 +56,9 @@ export default function ChatPage() {
         user_req: trimmedInput,
       };
 
-      const res = await fetch("http://127.0.0.1:8000/user_request", {
+      const API_URL =
+        process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+      const res = await fetch(`${API_URL}/user_request`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -191,7 +193,9 @@ export default function ChatPage() {
                 )
               ) {
                 try {
-                  await fetch("http://127.0.0.1:8000/disconnect", {
+                  const API_URL =
+                    process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+                  await fetch(`${API_URL}/disconnect`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ user_id: state.userId }),
