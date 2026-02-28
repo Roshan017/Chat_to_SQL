@@ -10,7 +10,7 @@ def get_redis_client():
     if not settings.REDIS_ENABLED:
         return None
         
-    if settings.REDIS_URL:
+    if settings.REDIS_URL and settings.REDIS_URL.strip() != "":
         client = redis.from_url(
             settings.REDIS_URL,
             decode_responses=True,
